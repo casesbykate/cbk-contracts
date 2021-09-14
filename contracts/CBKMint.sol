@@ -11,9 +11,13 @@ contract CBKMint is Ownable {
         nft = _nft;
     }
 
-    function mint(uint256 id) payable external {
-        require(msg.value == 20 ether);
-        nft.transferFrom(address(this), msg.sender, id);
+    function mint(address to, uint256 count) payable external {
+        require(msg.value == count * 20 ether);
+        uint256 balance = nft.balanceOf(address(this));
+        require(count <= balance);
+        for (uint256 i = 0; i < count; i += 1) {
+            nft.transferFrom(address(this), to, nft.tokenOfOwnerByIndex(address(this), i));
+        }
         owner().transfer(msg.value);
     }
 }
